@@ -1,7 +1,7 @@
 import heapq
 import os
 from .HeapNode import HeapNode
-from .HuffmanCodingUtils import make_frequency_dict, pad_encoded_text, get_byte_array, remove_padding
+from .utils import make_frequency_dict, pad_encoded_text, get_byte_array, remove_padding
 
 
 class HuffmanCoding:
@@ -9,7 +9,7 @@ class HuffmanCoding:
         self.path = path
         self.heap = []
         self.codes = {}
-        self.reverse_mapping = {}
+        self.reverse = {}
 
     def make_heap(self, frequency):
         for key in frequency:
@@ -26,17 +26,17 @@ class HuffmanCoding:
 
             heapq.heappush(self.heap, merged_node)
 
-    def make_codes_helper(self, root, current_code):
+    def make_codes_helper(self, root, current):
         if root is None:
             return
 
         if root.char is not None:
-            self.codes[root.char] = current_code
-            self.reverse_mapping[current_code] = root.char
+            self.codes[root.char] = current
+            self.reverse[current] = root.char
             return
 
-        self.make_codes_helper(root.left, current_code + "0")
-        self.make_codes_helper(root.right, current_code + "1")
+        self.make_codes_helper(root.left, current + "0")
+        self.make_codes_helper(root.right, current + "1")
 
     def make_codes(self):
         root = heapq.heappop(self.heap)
@@ -71,19 +71,19 @@ class HuffmanCoding:
         return output_path
 
     def decode_text(self, encoded_text: str) -> str:
-        print(self.reverse_mapping)
+        print(self.reverse)
         current_code = ""
         decoded_text = ""
 
         for bit in encoded_text:
             current_code += bit
-            if current_code in self.reverse_mapping:
-                decoded_text += self.reverse_mapping[current_code]
+            if current_code in self.reverse:
+                decoded_text += self.reverse[current_code]
                 current_code = ""
 
         return decoded_text
 
-    def decompress(self, input_path: str) -> str:
+    def decompress(self, input_path: str, secret_path: str) -> str:
         filename, file_extension = os.path.splitext(self.path)
         output_path = filename + "_decompressed" + ".txt"
 

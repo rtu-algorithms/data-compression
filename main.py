@@ -1,9 +1,9 @@
 import sys
-from gui import gui
+from gui.Gui import Gui
 from PyQt5 import QtWidgets
 
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    gui = gui.Gui()
+    gui = Gui()
     app.exec_()
