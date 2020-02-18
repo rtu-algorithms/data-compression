@@ -1,2 +1,2 @@
 # data-compression
-RTU | Algorithms and programming methods | Data compression with Lempel-Ziv-Welch and Huffman Coding
+RTU | Algorithms and programming methods | Data compression with Arithmetic Coding and Huffman Coding algorithms
