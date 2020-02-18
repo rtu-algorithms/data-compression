@@ -68,10 +68,7 @@ class HuffmanCoding:
             b = get_byte_array(padded_encoded_text)
             output.write(bytes(b))
 
-        print("Compressed")
         return output_path
-
-    """Decompression"""
 
     def decode_text(self, encoded_text: str) -> str:
         print(self.reverse_mapping)
@@ -106,5 +103,4 @@ class HuffmanCoding:
 
             output_file.write(decompressed_text)
 
-        print("Decompressed")
         return output_path

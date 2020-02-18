@@ -1,36 +1,29 @@
 from PyQt5 import QtWidgets, uic
-from huffman_coding.HuffmanCoding import HuffmanCoding
 
 
-def huffman_coding():
-    path = "files/input.txt"
-    h = HuffmanCoding(path)
-    output_path = h.compress()
-    h.decompress(output_path)
+def user_choose_file_name(title: str) -> str:
+    file_name, _ = QtWidgets.QFileDialog.getOpenFileName(None, title, "", "All files (*)")
+    return file_name
 
 
 class Gui(QtWidgets.QMainWindow):
-    @staticmethod
-    def user_choose_file_name(title: str) -> str:
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(None, title, "", "All files (*)")
-        return file_name
-
     def __init__(self):
         super(Gui, self).__init__()
         uic.loadUi('gui/gui.ui', self)
 
-        # btnHello
-        self.btnHello = self.findChild(QtWidgets.QPushButton, 'btnHello')
-        self.btnHello.clicked.connect(self.btn_hello_pressed)
+        # input_input_file
+        self.input_input_file = self.findChild(QtWidgets.QLineEdit, 'input_input_file')
 
-        # btnHello
-        self.txtLabel = self.findChild(QtWidgets.QLabel, 'txtLabel')
+        # btn_find_input_file
+        self.btn_find_input_file = self.findChild(QtWidgets.QPushButton, 'btn_find_input_file')
+        self.btn_find_input_file.clicked.connect(self.btn_find_input_file_pressed)
 
         self.show()
 
-    def btn_hello_pressed(self):
-        input_file_name = self.user_choose_file_name("Select Input File")
-        self.txtLabel.setText(input_file_name)
-        print(input_file_name)
-
-
+    def btn_find_input_file_pressed(self):
+        try:
+            input_file_name = user_choose_file_name("Izvēlēties Ievades failu")
+            if input_file_name is not None:
+                self.input_input_file.setText(input_file_name)
+        except Exception as e:
+            print(e)
