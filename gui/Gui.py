@@ -12,14 +12,20 @@ class Gui(QtWidgets.QMainWindow):
 
         # btn_find_input_file
         self.btn_find_input_file = self.findChild(QtWidgets.QPushButton, 'btn_find_input_file')
-        self.btn_find_input_file.clicked.connect(self.btn_find_input_file_pressed)
+        self.btn_find_input_file.clicked.connect(self.btn_find_input_file_clicked)
 
         self.show()
 
-    def btn_find_input_file_pressed(self):
+    def btn_find_input_file_clicked(self):
         try:
             input_file_name = user_choose_file_name("Izvēlēties Ievades failu")
             if input_file_name is not None:
                 self.input_input_file.setText(input_file_name)
         except Exception as e:
             print(e)
+
+    def btn_find_secret_file_clicked(self):
+        pass
+
+    def btn_go_clicked(self):
+        pass

@@ -314,7 +314,7 @@
      <string/>
     </property>
     <property name="text">
-     <string/>
+     <string>output.txt</string>
     </property>
     <property name="placeholderText">
      <string>Faila nosaukums</string>
