@@ -1,6 +1,5 @@
 # Compression Related files
-files/*.bin
-files/*.txt
+files/*
 
 
 # Byte-compiled / optimized / DLL files

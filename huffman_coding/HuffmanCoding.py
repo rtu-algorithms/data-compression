@@ -1,15 +1,17 @@
 import heapq
-import os
+import pickle
 from .HeapNode import HeapNode
 from .utils import make_frequency_dict, pad_encoded_text, get_byte_array, remove_padding
 
 
 class HuffmanCoding:
-    def __init__(self, path):
-        self.path = path
+    def __init__(self, input_file_path, output_file_path, secret_file_path):
+        self.input_file_path = input_file_path
+        self.output_file_path = output_file_path
+        self.secret_file_path = secret_file_path
         self.heap = []
         self.codes = {}
-        self.reverse = {}
+        self.secret = {}
 
     def make_heap(self, frequency):
         for key in frequency:
@@ -32,7 +34,7 @@ class HuffmanCoding:
 
         if root.char is not None:
             self.codes[root.char] = current
-            self.reverse[current] = root.char
+            self.secret[current] = root.char
             return
 
         self.make_codes_helper(root.left, current + "0")
@@ -49,12 +51,24 @@ class HuffmanCoding:
             encoded_text += self.codes[character]
         return encoded_text
 
-    def compress(self) -> str:
-        filename, file_extension = os.path.splitext(self.path)
-        output_path = filename + ".bin"
+    def decode_text(self, encoded_text: str) -> str:
+        current_code = ""
+        decoded_text = ""
 
-        with open(self.path, 'r+') as file, open(output_path, 'wb') as output:
-            text = file.read()
+        for bit in encoded_text:
+            current_code += bit
+            if current_code in self.secret:
+                decoded_text += self.secret[current_code]
+                current_code = ""
+
+        return decoded_text
+
+    def compress(self):
+        print(">>> HuffmanCoding:compress - START")
+        with open(self.input_file_path, 'r+') as input_file,   \
+             open(self.output_file_path, 'wb') as output_file, \
+             open(self.secret_file_path, 'wb') as secret_file:
+            text = input_file.read()
             text = text.rstrip()
 
             frequency = make_frequency_dict(text)
@@ -66,28 +80,17 @@ class HuffmanCoding:
             padded_encoded_text = pad_encoded_text(encoded_text)
 
             b = get_byte_array(padded_encoded_text)
-            output.write(bytes(b))
+            output_file.write(bytes(b))
+            pickle.dump(self.secret, secret_file)
+        print(">>> HuffmanCoding:compress - FINISH")
 
-        return output_path
-
-    def decode_text(self, encoded_text: str) -> str:
-        print(self.reverse)
-        current_code = ""
-        decoded_text = ""
-
-        for bit in encoded_text:
-            current_code += bit
-            if current_code in self.reverse:
-                decoded_text += self.reverse[current_code]
-                current_code = ""
-
-        return decoded_text
-
-    def decompress(self, input_path: str, secret_path: str) -> str:
-        filename, file_extension = os.path.splitext(self.path)
-        output_path = filename + "_decompressed" + ".txt"
-
-        with open(input_path, 'rb') as input_file, open(output_path, 'w') as output_file:
+    def decompress(self):
+        print(">>> HuffmanCoding:decompress - START")
+        with open(self.input_file_path, 'rb') as input_file,  \
+             open(self.output_file_path, 'w') as output_file, \
+             open(self.secret_file_path, 'rb') as secret_file:
+            self.secret = pickle.load(secret_file)
+            print(self.secret)
             bit_string = ""
 
             byte = input_file.read(1)
@@ -102,5 +105,5 @@ class HuffmanCoding:
             decompressed_text = self.decode_text(encoded_text)
 
             output_file.write(decompressed_text)
+        print(">>> HuffmanCoding:decompress - FINISH")
 
-        return output_path
