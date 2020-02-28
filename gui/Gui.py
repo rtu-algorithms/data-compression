@@ -1,10 +1,13 @@
+import time
+from os.path import getsize as get_file_size
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QLineEdit, QRadioButton, QPushButton
 from .utils import user_choose_file_name
 from coding.CodingAlgorithms import CodingAlgorithms
 from coding.CodingMethods import CodingMethods
+from coding.Result import Result
 from coding.coding import compress, decompress
-from .ErrorMessage import show_error_message
+from .MessageBox import show_error_message_box, show_message_box
 
 
 class Gui(QMainWindow):
@@ -69,8 +72,8 @@ class Gui(QMainWindow):
             elif self.radio_btn_arithmetic_coding.isChecked():
                 algorithm = CodingAlgorithms.Arithmetic
             else:
-                show_error_message('Algorimts nav izvēlēts!',
-                                   'Lūdzu, izvēlēties kādu no diviem algoritmiem: Huffman Coding vai Arithmetic Coding.')
+                show_error_message_box('Algorimts nav izvēlēts!',
+                                       'Lūdzu, izvēlēties kādu no diviem algoritmiem: Huffman Coding vai Arithmetic Coding.')
                 return
 
             method = None
@@ -79,21 +82,21 @@ class Gui(QMainWindow):
             elif self.radio_btn_decompress.isChecked():
                 method = CodingMethods.Decompress
             else:
-                show_error_message('Metode nav izvēlēts!',
-                                   'Lūdzu, izvēlēties kādu no diviem metodēm: Saspiešana vai Dekodēšana.')
+                show_error_message_box('Metode nav izvēlēts!',
+                                       'Lūdzu, izvēlēties kādu no diviem metodēm: Saspiešana vai Dekodēšana.')
                 return
 
             input_file_path = self.input_input_file_path.text()
             if not input_file_path:
-                show_error_message('Ievades faila cēļš nav norādīts!',
-                                   'Lūdzu, norādiet cēļu līdz ievades failam, ar kuru būs izdārīta saspiešana vai dekodēšana.')
+                show_error_message_box('Ievades faila cēļš nav norādīts!',
+                                       'Lūdzu, norādiet cēļu līdz ievades failam, ar kuru būs izdārīta saspiešana vai dekodēšana.')
                 return
 
             output_file_name = self.input_output_file_name.text()
             output_file_path = None
             if not output_file_name:
-                show_error_message('Izvades faila nosaukums nav norādīts!',
-                                   'Lūdzu, norādiet ievades faila nosaukumu, kurā būs ierakstīts rezultāts.')
+                show_error_message_box('Izvades faila nosaukums nav norādīts!',
+                                       'Lūdzu, norādiet ievades faila nosaukumu, kurā būs ierakstīts rezultāts.')
                 return
             else:
                 divider = '/'
@@ -107,8 +110,8 @@ class Gui(QMainWindow):
                 if method is CodingMethods.Decompress:
                     secret_file_path = self.input_secret_file_path.text()
                     if not secret_file_path:
-                        show_error_message('Dekodešanas faila cēļš nav norādīts!',
-                                           'Lūdzu, norādiet cēļu līdz dekodešanas failam priekš Huffman algoritmam.')
+                        show_error_message_box('Dekodešanas faila cēļš nav norādīts!',
+                                               'Lūdzu, norādiet cēļu līdz dekodešanas failam priekš Huffman algoritmam.')
                         return
                 else:
                     divider = '/'
@@ -117,10 +120,17 @@ class Gui(QMainWindow):
                         divider=divider,
                         file_name='decode_secret.pkl')
 
-            # Call Coding algorithms
+            # Call Coding algorithms with getting Result()
+            start_time = time.time()
             if method is CodingMethods.Compress:
                 compress(algorithm, input_file_path, output_file_path, secret_file_path)
             else:
                 decompress(algorithm, input_file_path, output_file_path, secret_file_path)
+            end_time = time.time()
+            result = Result(input_file_size=get_file_size(input_file_path),
+                            output_file_size=get_file_size(output_file_path),
+                            time=end_time - start_time)
+            show_message_box('Programma veiksmīgi nostrādāja!', str(result))
+
         except Exception as e:
             print(e)
