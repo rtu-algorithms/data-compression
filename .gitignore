@@ -1,6 +1,7 @@
-# Compression Related files
-files/*
-
+Compression Related files:
+*.bin
+*.pkl
+decompressed.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
